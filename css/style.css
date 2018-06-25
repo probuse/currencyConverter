@@ -1,0 +1,59 @@
+body {
+    background-color: aqua
+}
+.nav-bar {
+    background-color: black;
+    height: 2em;
+    color: #fff;
+    padding: 1em;
+    font-size: 1.5em;
+    overflow-wrap: break-word;
+}
+.main {
+    vertical-align: middle;
+    margin: 1.5em;
+    border: 1px black solid;
+    text-align: center;
+    overflow: hidden;
+    padding: 1em;
+}
+
+.left-row {
+    width: 50%;
+    padding: 1em 0;
+    float: left; 
+    background-color: red; 
+}
+
+.right-row {
+    width: 50%;
+    padding: 1em 0; 
+    float: right; 
+    background-color: purple;
+}
+
+.left-row input {
+    width: 30%;
+}
+
+.left-row select {
+    width: 30%;
+}
+
+.right-row input {
+    width: 30%;
+}
+
+.right-row select {
+    width: 30%;
+}
+
+.label-title {
+    text-align: start
+}
+.button {
+    background-color: blue;
+    color: #fff;
+    border-radius: 1em;
+    font-size: 1.5em;
+}
