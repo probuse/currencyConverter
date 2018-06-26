@@ -1,5 +1,6 @@
 body {
-    background-color: aqua
+    background-color: aqua;
+    margin-bottom: 3em;
 }
 .nav-bar {
     background-color: black;
@@ -56,4 +57,12 @@ body {
     color: #fff;
     border-radius: 1em;
     font-size: 1.5em;
+}
+.footer {
+    text-align: center;
+    height: 2em;
+    background-color: black;
+    color: #fff;
+    padding: 5px 0;
+    margin-bottom: 0px;
 }

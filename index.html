@@ -14,30 +14,20 @@
     </nav>
     <div class="main">
         <h2 class="title">Select Currency And Enter Amount To Convert</h2>
-        <form class="form-class" action="#">
+        <form class="form-class" onsubmit="startConversion()">
             <div class="left-row">
                 <label>Currency From</label>
                 <br>
-                <select>
-                    <option value="Ugx">Ugx</option>
-                    <option value="Ksh">Ksh</option>
-                    <option value="Naira">Naira</option>
-                    <option value="Rand">Rand</option>  
-                </select>
+                <select id="fromCurrency" class="currencyList"></select>
                 <br>
                 <label>Amount</label>
                 <br>
-                <input type="number" min="0" value="0">
+                <input type="number" min="0" value="0" id="fromAmount">
             </div>
             <div class="right-row">
                 <label>Currency To</label>
                 <br>
-                <select>
-                    <option value="Ugx">Ugx</option>
-                    <option value="Ksh">Ksh</option>
-                    <option value="Naira">Naira</option>
-                    <option value="Rand">Rand</option>  
-                </select>
+                <select id="toCurrency"></select>
                 <br>
                 <label>Amount</label>
                 <br>
@@ -47,6 +37,10 @@
             <input class="button" type="submit" value="Convert Currency">
         </form>
     </div>
+    <footer class="footer">
+        <p>Copyright &copy; currencyConverter 2018</p>
+    </footer>
     <script src="js/sw.js"></script>
+    <script src="js/index.js"></script>
 </body>
 </html>
