@@ -14,11 +14,11 @@
     </nav>
     <div class="main">
         <h2 class="title">Select Currency And Enter Amount To Convert</h2>
-        <form class="form-class" onsubmit="startConversion()">
+        <form class="form-class" id="currency-form">
             <div class="left-row">
                 <label>Currency From</label>
                 <br>
-                <select id="fromCurrency" class="currencyList"></select>
+                <select id="fromCurrency" class="currencyNames"></select>
                 <br>
                 <label>Amount</label>
                 <br>
@@ -27,14 +27,14 @@
             <div class="right-row">
                 <label>Currency To</label>
                 <br>
-                <select id="toCurrency"></select>
+                <select id="toCurrency" class="currencyNames"></select>
                 <br>
                 <label>Amount</label>
                 <br>
                 <input type="number" min="0">
             </div>
             <br>
-            <input class="button" type="submit" value="Convert Currency">
+            <button class="button" id="submitCurrency">Convert Currency</button>
         </form>
     </div>
     <footer class="footer">
