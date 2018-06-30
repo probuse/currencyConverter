@@ -31,10 +31,10 @@
                 <br>
                 <label>Amount</label>
                 <br>
-                <input type="number" min="0">
+                <input type="decimal" min="0" id="toAmount" readonly>
             </div>
             <br>
-            <button class="button" id="submitCurrency">Convert Currency</button>
+            <button class="button" onclick="startConversion()">Convert Currency</button>
         </form>
     </div>
     <footer class="footer">
