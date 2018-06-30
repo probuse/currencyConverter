@@ -23,14 +23,14 @@ body {
     width: 50%;
     padding: 1em 0;
     float: left; 
-    background-color: red; 
+    /* background-color: red;  */
 }
 
 .right-row {
     width: 50%;
     padding: 1em 0; 
     float: right; 
-    background-color: purple;
+    /* background-color: purple; */
 }
 
 .left-row input {
@@ -65,4 +65,9 @@ body {
     color: #fff;
     padding: 5px 0;
     margin-bottom: 0px;
+
+    bottom: 0%;
+    position: absolute;
+    position: fixed;
+    width: 100%;
 }
