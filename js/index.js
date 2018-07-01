@@ -1,11 +1,9 @@
-self.addEventListener('install', event => {
-    console.log('We are installing service worker.')
-});
-
 window.addEventListener('load', () => {
     // remember to consult the cache for offline functionality.
     document.getElementById('fromAmount').value = 0;
     document.getElementById('toAmount').value = 0;
+
+    console.log('We are running');
     fetch('https://free.currencyconverterapi.com/api/v5/currencies').then(response => {       
         return response.json();   
     }).then(data => {
@@ -26,11 +24,40 @@ window.addEventListener('load', () => {
             currencyOption.setAttribute("id", currency.id);
             toSelect.appendChild(currencyOption);
         }
-    });
+    }).catch(error => {
+        return idb.open('currencyConverter-store', 1, upgradeDb => {
+            switch(upgradeDb.oldVersion) {
+                case 0:
+                    upgradeDb.createObjectStore('currencies');
+                case 1:
+                    upgradeDb.createObjectStore('currencyRates');
+            }
+        }).then(db => {
+            let transaction = db.transaction('currencies');
+            let currenciesStore = transaction.objectStore('currencies');
+            return currenciesStore.openCursor();
+        }).then(function populateUI(currencies) {
+            if(currencies){
+                console.log(currencies.key, currencies.value);
+                /* populate from option fields */
+                let fromCurrencyOption = document.createElement('option');
+                let toCurrencyOption = document.createElement('option');
+                let fromSelect = document.getElementById('fromCurrency');
+                let toSelect = document.getElementById('toCurrency');
+                fromCurrencyOption.textContent = currencies.value[0];
+                toCurrencyOption.textContent = currencies.value[1];
+                fromCurrencyOption.setAttribute("id", currencies.key.split('_')[0]);
+                toCurrencyOption.setAttribute("id", currencies.key.split('_')[1]);
+                fromSelect.appendChild(fromCurrencyOption);
+                toSelect.appendChild(toCurrencyOption);
+                return currencies.continue().then(populateUI);
+            }
+        });
+    }); 
 });
 
 
-startConversion = () => {
+const startConversion = () => {
     const fromSelector = document.getElementById('fromCurrency');
     const toSelector = document.getElementById('toCurrency');
     const fromAmount = document.getElementById('fromAmount').value;
@@ -48,6 +75,32 @@ startConversion = () => {
         [queryResult, inverseQueryResult] = Object.values(data);
         conversionResult = fromAmount * queryResult;
         toAmount.value = conversionResult;
+
+        return idb.open('currencyConverter-store', 1, upgradeDb => {
+            switch(upgradeDb.oldVersion) {
+                case 0:
+                    upgradeDb.createObjectStore('currencies');
+                case 1:
+                    upgradeDb.createObjectStore('currencyRates');
+            }
+        }).then(db => {
+            let currenciesTX = db.transaction('currencies', 'readwrite');
+            let currencyRatesTX = db.transaction('currencyRates', 'readwrite');
+            let currenciesStore = currenciesTX.objectStore('currencies');
+            let currencyRatesStore = currencyRatesTX.objectStore('currencyRates');
+
+            let currenciesKey = `${fromId}_${toId}`;
+            let inverseCurrenciesKey = `${toId}_${fromId}`;
+            let currenciesValue = [fromCurrency, toCurrency];
+
+            currenciesStore.put(currenciesValue, currenciesKey);
+            currencyRatesStore.put(queryResult, currenciesKey);
+            currencyRatesStore.put(inverseQueryResult, inverseCurrenciesKey);
+            currenciesTX.complete;
+            currencyRatesTX.complete;
+        }).then(() => {
+            console.log('Currencies Successfully stored in Database.');
+        });
         
     }).catch(error => {
         console.log(error);
