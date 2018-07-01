@@ -1,3 +1,7 @@
+self.addEventListener('install', event => {
+    console.log('We are installing service worker.')
+});
+
 window.addEventListener('load', () => {
     // remember to consult the cache for offline functionality.
     document.getElementById('fromAmount').value = 0;
@@ -49,3 +53,4 @@ startConversion = () => {
         console.log(error);
     });
 }
+
