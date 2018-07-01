@@ -2,10 +2,10 @@ self.addEventListener('install', event => {
     event.waitUntil(
         caches.open('currency-converter-cache').then(cache => {
             return cache.addAll([
-                '/index.html',
-                'css/style.css',
-                'js/index.js',
-                'images/moneyConverter.png'
+                './index.html',
+                './css/style.css',
+                './js/index.js',
+                './images/moneyConverter.png'
             ]);
         })
     );
