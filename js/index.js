@@ -1,9 +1,18 @@
+function getDatabaseObject(){
+    return idb.open('currencyConverter-store', 1, upgradeDb => {
+        switch(upgradeDb.oldVersion) {
+            case 0:
+                upgradeDb.createObjectStore('currencies');
+            case 1:
+                upgradeDb.createObjectStore('currencyRates');
+        }
+    })
+}
 window.addEventListener('load', () => {
     // remember to consult the cache for offline functionality.
     document.getElementById('fromAmount').value = 0;
     document.getElementById('toAmount').value = 0;
 
-    console.log('We are running');
     fetch('https://free.currencyconverterapi.com/api/v5/currencies').then(response => {       
         return response.json();   
     }).then(data => {
@@ -25,20 +34,11 @@ window.addEventListener('load', () => {
             toSelect.appendChild(currencyOption);
         }
     }).catch(error => {
-        return idb.open('currencyConverter-store', 1, upgradeDb => {
-            switch(upgradeDb.oldVersion) {
-                case 0:
-                    upgradeDb.createObjectStore('currencies');
-                case 1:
-                    upgradeDb.createObjectStore('currencyRates');
-            }
-        }).then(db => {
-            let transaction = db.transaction('currencies');
-            let currenciesStore = transaction.objectStore('currencies');
+        getDatabaseObject().then(db => {
+            let currenciesStore = db.transaction('currencies').objectStore('currencies');
             return currenciesStore.openCursor();
         }).then(function populateUI(currencies) {
             if(currencies){
-                console.log(currencies.key, currencies.value);
                 /* populate from option fields */
                 let fromCurrencyOption = document.createElement('option');
                 let toCurrencyOption = document.createElement('option');
@@ -69,6 +69,7 @@ const startConversion = () => {
     
     let query = `${fromId}_${toId}`;
     let inverseQuery = `${toId}_${fromId}`;
+    
     fetch(`https://free.currencyconverterapi.com/api/v5/convert?q=${query},${inverseQuery}&compact=ultra`).then(response => {
         return response.json();
     }).then(data => {
@@ -76,14 +77,7 @@ const startConversion = () => {
         conversionResult = fromAmount * queryResult;
         toAmount.value = conversionResult;
 
-        return idb.open('currencyConverter-store', 1, upgradeDb => {
-            switch(upgradeDb.oldVersion) {
-                case 0:
-                    upgradeDb.createObjectStore('currencies');
-                case 1:
-                    upgradeDb.createObjectStore('currencyRates');
-            }
-        }).then(db => {
+        getDatabaseObject().then(db => {
             let currenciesTX = db.transaction('currencies', 'readwrite');
             let currencyRatesTX = db.transaction('currencyRates', 'readwrite');
             let currenciesStore = currenciesTX.objectStore('currencies');
@@ -99,11 +93,23 @@ const startConversion = () => {
             currenciesTX.complete;
             currencyRatesTX.complete;
         }).then(() => {
+            
             console.log('Currencies Successfully stored in Database.');
         });
         
     }).catch(error => {
         console.log(error);
+        getDatabaseObject().then(db => {
+            let currencyRatesStore = db.transaction('currencyRates').objectStore('currencyRates');
+            return currencyRatesStore.openCursor();
+        }).then(function calculateRate(cursor) {
+            if(cursor){
+                if(cursor.key === query){
+                    toAmount.value = cursor.value * fromAmount;
+                }
+            return cursor.continue().then(calculateRate);
+            }
+        }); 
     });
 }
 
